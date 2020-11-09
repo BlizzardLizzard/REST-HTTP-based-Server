@@ -20,14 +20,13 @@ public class Server {
                 PrintWriter out = new PrintWriter(socket.getOutputStream());
 
                 StringBuilder result = new StringBuilder();
-                do {
+                while (inputStream.available() > 0) {
                     result.append((char) inputStream.read());
-                } while (inputStream.available() > 0);
-                System.out.println(result);
-
+                }
                 String request = result.toString();
-
-                RequestHandler(request, out);
+                String[] requestSplit;
+                requestSplit = request.split(" ");
+                RequestHandler(requestSplit, out, request);
 
                 socket.close();
             }
@@ -36,18 +35,19 @@ public class Server {
         }
     }
 
-    public static void RequestHandler(String request, PrintWriter out){
-        if(request.contains("POST")) { {
-                new RequestContext("POST", "/messages", "HTTP/1.1");
+    public static void RequestHandler(String[] requestSplit, PrintWriter out, String requestString){
+        String request = requestSplit[0];
+        if(request.equals("POST")) { {
+                new RequestContext("POST", "/messages", "HTTP/1.1", requestString);
                 out.println("HTTP/1.0 200 OK");
                 out.println("Content-Type: text/html");
                 out.println("");
                 out.println("Hallo Postman this is a POST reply");
+                out.flush();
             }
-            out.flush();
         }
 
-        if(request.contains("GET"))
+        if(request.equals("GET"))
         {
             out.println("HTTP/1.0 200 OK");
             out.println("Content-Type: text/html");
