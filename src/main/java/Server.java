@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 
 public class Server {
@@ -23,11 +24,11 @@ public class Server {
                 while (inputStream.available() > 0) {
                     result.append((char) inputStream.read());
                 }
-                String request = result.toString();
-                String[] requestSplit;
-                requestSplit = request.split(" ");
-                RequestHandler(requestSplit, out, request);
 
+                String request = result.toString();
+                String[] requestSplit = request.split(" ");
+
+                RequestHandler(requestSplit, out, request);
                 socket.close();
             }
         }catch(Exception e){
@@ -35,25 +36,26 @@ public class Server {
         }
     }
 
-    public static void RequestHandler(String[] requestSplit, PrintWriter out, String requestString){
+    public static void RequestHandler(String[] requestSplit, PrintWriter out, String requestString) {
         String request = requestSplit[0];
-        if(request.equals("POST")) { {
-                new RequestContext("POST", "/messages", "HTTP/1.1", requestString);
+        ArrayList<RequestContext> requestContexts = new ArrayList<>();
+        if (!request.isEmpty()) {
+            String[] httpVersion = requestSplit[2].split("\\r?\\n");
+            requestContexts.add(new RequestContext(request, requestSplit[1], httpVersion[0], requestString));
+            if (request.equals("POST")) {
                 out.println("HTTP/1.0 200 OK");
                 out.println("Content-Type: text/html");
                 out.println("");
                 out.println("Hallo Postman this is a POST reply");
                 out.flush();
             }
-        }
-
-        if(request.equals("GET"))
-        {
-            out.println("HTTP/1.0 200 OK");
-            out.println("Content-Type: text/html");
-            out.println("");
-            out.println("Hallo Postman this is a GET reply");
-            out.flush();
+            if (request.equals("GET")) {
+                out.println("HTTP/1.0 200 OK");
+                out.println("Content-Type: text/html");
+                out.println("");
+                out.println("Hallo Postman this is a GET reply");
+                out.flush();
+            }
         }
     }
 }
