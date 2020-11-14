@@ -4,7 +4,6 @@ public class RequestContext {
      public String URI;
      public String message;
 
-
      public RequestContext(String request, String HttpType, String URI, String requestString)
      {
          this.request = request;

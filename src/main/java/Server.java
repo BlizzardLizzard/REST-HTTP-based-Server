@@ -1,7 +1,6 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 
 
 public class Server {
@@ -18,7 +17,6 @@ public class Server {
             while (true) {
                 Socket socket = server.accept();
                 InputStream inputStream = socket.getInputStream();
-                PrintWriter out = new PrintWriter(socket.getOutputStream());
 
                 StringBuilder result = new StringBuilder();
                 while (inputStream.available() > 0) {
@@ -28,7 +26,7 @@ public class Server {
                 String request = result.toString();
                 String[] requestSplit = request.split(" ");
 
-                RequestHandler(requestSplit, out, request);
+                RequestHandler(requestSplit,socket, request);
                 socket.close();
             }
         }catch(Exception e){
@@ -36,26 +34,12 @@ public class Server {
         }
     }
 
-    public static void RequestHandler(String[] requestSplit, PrintWriter out, String requestString) {
+    public static void RequestHandler(String[] requestSplit, Socket socket, String requestString) {
         String request = requestSplit[0];
-        ArrayList<RequestContext> requestContexts = new ArrayList<>();
         if (!request.isEmpty()) {
             String[] httpVersion = requestSplit[2].split("\\r?\\n");
-            requestContexts.add(new RequestContext(request, requestSplit[1], httpVersion[0], requestString));
-            if (request.equals("POST")) {
-                out.println("HTTP/1.0 200 OK");
-                out.println("Content-Type: text/html");
-                out.println("");
-                out.println("Hallo Postman this is a POST reply");
-                out.flush();
-            }
-            if (request.equals("GET")) {
-                out.println("HTTP/1.0 200 OK");
-                out.println("Content-Type: text/html");
-                out.println("");
-                out.println("Hallo Postman this is a GET reply");
-                out.flush();
-            }
+            RequestContext requestContext =  new RequestContext(request, requestSplit[1], httpVersion[0], requestString);
+            new RequestHandler(request, socket, requestContext);
         }
     }
 }
