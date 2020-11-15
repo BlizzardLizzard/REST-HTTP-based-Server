@@ -82,7 +82,6 @@ public class RequestHandler {
         //if the path that was given without a number parse through the directory and print names and messages from the files in the directory
         if(numberOfStrings <= 2 && pathNames.length > 0){
             status = "200";
-            assert pathNames != null;
             //for every entry in the directory the name and message is read and printed
             for(String pathname : pathNames){
                 File file = new File("messages/" + pathname);
