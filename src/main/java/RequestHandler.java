@@ -2,19 +2,20 @@ import java.awt.geom.Point2D;
 import java.io.*;
 import java.net.Socket;
 import java.util.Objects;
+import java.util.Scanner;
 
 public class RequestHandler {
     public String request;
     public int numberOfEntriesInDir = 0;
 
-    public RequestHandler(String request, Socket socket, RequestContext requestContext) {
+    public RequestHandler(String request, Socket socket, RequestContext requestContext) throws FileNotFoundException {
         this.request = request;
         if(request.equals("POST")){
             PostRequest(requestContext);
             PrintReply(socket);
         }
         if(request.equals("GET")){
-            PrintReply(socket);
+            GetRequest(requestContext ,socket);
         }
     }
 
@@ -44,6 +45,42 @@ public class RequestHandler {
         }
     }
 
+    public void GetRequest(RequestContext requestContext, Socket socket) throws FileNotFoundException {
+        PrintWriter out = null;
+        String path = requestContext.getURI();
+        String[] pathSplit = path.split("/");
+        File getFile = new File("messages/");
+        String[] pathNames = getFile.list();
+
+        try {
+           out = new PrintWriter(socket.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        out.println("HTTP/1.0 200 OK");
+        out.println("Content-Type: text/html");
+        out.println("");
+        if(!path.startsWith("/messages/")){
+            assert pathNames != null;
+            for(String pathname : pathNames){
+                out.println("Entry: " + pathname);
+            }
+        }else{
+            File getRequest = new File("messages/" + pathSplit[2] + ".txt");
+            if(getRequest.exists()){
+                Scanner reader = new Scanner(getRequest);
+                String message = null;
+                while(reader.hasNextLine()){
+                    message = reader.nextLine();
+                }
+                reader.close();
+                out.println("Message from ID " + pathSplit[2] + ": " + message);
+            }else{
+                out.println("Message ID doesn't exist!");
+            }
+        }
+        out.flush();
+    }
 
     public void PrintReply(Socket socket){
         PrintWriter out = null;

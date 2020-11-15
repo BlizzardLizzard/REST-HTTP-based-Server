@@ -34,11 +34,11 @@ public class Server {
         }
     }
 
-    public static void RequestHandler(String[] requestSplit, Socket socket, String requestString) {
+    public static void RequestHandler(String[] requestSplit, Socket socket, String requestString) throws FileNotFoundException {
         String request = requestSplit[0];
         if (!request.isEmpty()) {
             String[] httpVersion = requestSplit[2].split("\\r?\\n");
-            RequestContext requestContext =  new RequestContext(request, requestSplit[1], httpVersion[0], requestString);
+            RequestContext requestContext =  new RequestContext(request, httpVersion[0], requestSplit[1], requestString);
             new RequestHandler(request, socket, requestContext);
         }
     }
