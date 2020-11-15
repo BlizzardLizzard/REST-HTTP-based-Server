@@ -1,0 +1,14 @@
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class ServerTest {
+
+    @Test
+    void startServer(Server socket) {
+    }
+
+    @Test
+    void requestHandler() {
+    }
+}
