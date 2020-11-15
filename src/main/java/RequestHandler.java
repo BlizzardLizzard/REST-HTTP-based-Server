@@ -1,4 +1,3 @@
-import java.awt.geom.Point2D;
 import java.io.*;
 import java.net.Socket;
 import java.util.Objects;
@@ -10,12 +9,14 @@ public class RequestHandler {
 
     public RequestHandler(String request, Socket socket, RequestContext requestContext) throws FileNotFoundException {
         this.request = request;
-        if(request.equals("POST")){
-            PostRequest(requestContext);
-            PrintReply(socket);
-        }
-        if(request.equals("GET")){
-            GetRequest(requestContext ,socket);
+        switch (request) {
+            case "POST" -> {
+                PostRequest(requestContext);
+                PrintReply(socket);
+            }
+            case "GET" -> GetRequest(requestContext, socket);
+            case "DELETE" -> DeleteRequest(socket, requestContext);
+            case "PUT" -> PutRequest(socket, requestContext);
         }
     }
 
@@ -51,6 +52,7 @@ public class RequestHandler {
         String[] pathSplit = path.split("/");
         File getFile = new File("messages/");
         String[] pathNames = getFile.list();
+        int numberOfStrings = pathSplit.length;
 
         try {
            out = new PrintWriter(socket.getOutputStream());
@@ -60,7 +62,7 @@ public class RequestHandler {
         out.println("HTTP/1.0 200 OK");
         out.println("Content-Type: text/html");
         out.println("");
-        if(!path.startsWith("/messages/")){
+        if(numberOfStrings <= 2){
             assert pathNames != null;
             for(String pathname : pathNames){
                 out.println("Entry: " + pathname);
@@ -69,7 +71,7 @@ public class RequestHandler {
             File getRequest = new File("messages/" + pathSplit[2] + ".txt");
             if(getRequest.exists()){
                 Scanner reader = new Scanner(getRequest);
-                String message = null;
+                String message = " ";
                 while(reader.hasNextLine()){
                     message = reader.nextLine();
                 }
@@ -80,6 +82,43 @@ public class RequestHandler {
             }
         }
         out.flush();
+    }
+
+    public void DeleteRequest(Socket socket, RequestContext requestContext){
+        PrintWriter out = null;
+        String path = requestContext.getURI();
+        String[] pathSplit = path.split("/");
+        int numberOfStrings = pathSplit.length;
+        try {
+            out = new PrintWriter(socket.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+            if(numberOfStrings > 2){
+                File deleteFile = new File("messages/" + pathSplit[2] + ".txt");
+                if(deleteFile.delete()){
+                    out.println("HTTP/1.0 200 OK");
+                    out.println("Content-Type: text/html");
+                    out.println("");
+                    out.println(pathSplit[2] + ".txt has been successfully deleted!");
+                }else{
+                    out.println("HTTP/1.0 200 OK");
+                    out.println("Content-Type: text/html");
+                    out.println("");
+                    out.println("File could not be found!");
+                }
+            }else{
+                out.println("HTTP/1.0 200 OK");
+                out.println("Content-Type: text/html");
+                out.println("");
+                out.println("Please enter an ID!");
+            }
+        out.flush();
+    }
+
+    public void PutRequest(Socket socket, RequestContext requestContext){
+        String path = requestContext.getURI();
+
     }
 
     public void PrintReply(Socket socket){
@@ -98,4 +137,3 @@ public class RequestHandler {
 }
 
 
-/*Wenn ich eine Datei lösche dann habe ich eine Datei die genauso heißt wie die nächste höhere und bleibe bei einer Zahl stehen. Also sollte immer verglichen werden ob die Zahl die wir von den Einträgen im Dir haben kleiner ist als die die wir als txt gespeichert haben. floglich muss geschaut werden wenn der letzte eintrag nicht größer als die anzhal im dir ist dann kann man noormal weiterabreiten ist das aber nciht der fall dann muss die zahl genommen werden die vom letzten eintrag im dir kommt.*/
