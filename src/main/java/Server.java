@@ -34,7 +34,7 @@ public class Server {
         }
     }
 
-    public static void RequestHandler(String[] requestSplit, Socket socket, String requestString) throws FileNotFoundException {
+    public static void RequestHandler(String[] requestSplit, Socket socket, String requestString) throws IOException {
         String request = requestSplit[0];
         if (!request.isEmpty()) {
             String[] httpVersion = requestSplit[2].split("\\r?\\n");

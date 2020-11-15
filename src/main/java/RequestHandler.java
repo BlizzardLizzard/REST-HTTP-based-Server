@@ -7,7 +7,7 @@ public class RequestHandler {
     public String request;
     public int numberOfEntriesInDir = 0;
 
-    public RequestHandler(String request, Socket socket, RequestContext requestContext) throws FileNotFoundException {
+    public RequestHandler(String request, Socket socket, RequestContext requestContext) throws IOException {
         this.request = request;
         switch (request) {
             case "POST" -> {
@@ -116,9 +116,39 @@ public class RequestHandler {
         out.flush();
     }
 
-    public void PutRequest(Socket socket, RequestContext requestContext){
+    public void PutRequest(Socket socket, RequestContext requestContext) throws IOException {
+        PrintWriter out = null;
         String path = requestContext.getURI();
-
+        String[] pathSplit = path.split("/");
+        int numberOfStrings = pathSplit.length;
+        try {
+            out = new PrintWriter(socket.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (numberOfStrings > 2) {
+            File file = new File("messages/" + pathSplit[2] + ".txt");
+            if (file.exists()) {
+                FileWriter writer = new FileWriter(file);
+                writer.write(requestContext.getMessage());
+                writer.close();
+                out.println("HTTP/1.0 200 OK");
+                out.println("Content-Type: text/html");
+                out.println("");
+                out.println("File " + pathSplit[2] + ".txt updated!");
+            } else {
+                out.println("HTTP/1.0 200 OK");
+                out.println("Content-Type: text/html");
+                out.println("");
+                out.println("Please enter a valid ID!");
+            }
+        }else{
+            out.println("HTTP/1.0 200 OK");
+            out.println("Content-Type: text/html");
+            out.println("");
+            out.println("Please enter an ID!");
+        }
+        out.flush();
     }
 
     public void PrintReply(Socket socket){

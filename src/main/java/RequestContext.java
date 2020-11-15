@@ -13,7 +13,7 @@ public class RequestContext {
          System.out.println(request);
          System.out.println(HttpType);
          System.out.println(URI);
-         if(request.equals("POST"))
+         if(request.equals("POST") || request.equals("PUT"))
          {
              messageHandler(requestString);
          }
