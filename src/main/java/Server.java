@@ -1,3 +1,5 @@
+//git repo: https://github.com/BlizzardLizzard/REST-HTTP-based-Server/
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -7,6 +9,7 @@ public class Server {
 
     public static void main(String[] args) throws IOException {
 
+        //starting the server here
         ServerSocket server = new ServerSocket(8080);
         System.out.println("Listening for connection on port 8080 ....");
         StartServer(server);
@@ -18,11 +21,13 @@ public class Server {
                 Socket socket = server.accept();
                 InputStream inputStream = socket.getInputStream();
 
+                //handles inputstream and saves it char by char
                 StringBuilder result = new StringBuilder();
                 while (inputStream.available() > 0) {
                     result.append((char) inputStream.read());
                 }
 
+                //string split by spaces into a String[]
                 String request = result.toString();
                 String[] requestSplit = request.split(" ");
 
@@ -34,10 +39,11 @@ public class Server {
         }
     }
 
-    public static void RequestHandler(String[] requestSplit, Socket socket, String requestString) throws FileNotFoundException {
+    public static void RequestHandler(String[] requestSplit, Socket socket, String requestString) throws IOException {
         String request = requestSplit[0];
         if (!request.isEmpty()) {
             String[] httpVersion = requestSplit[2].split("\\r?\\n");
+            //sends context of the request to the RequestContext class to save important variables of teh request
             RequestContext requestContext =  new RequestContext(request, httpVersion[0], requestSplit[1], requestString);
             new RequestHandler(request, socket, requestContext);
         }
