@@ -1,3 +1,5 @@
+package Server;
+
 public class RequestContext {
      public String request;
      public String HttpType;

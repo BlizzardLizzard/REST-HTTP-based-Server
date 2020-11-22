@@ -1,3 +1,5 @@
+package Server;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.Objects;
@@ -26,6 +28,14 @@ public class RequestHandler {
             case "GET" -> GetRequest(requestContext, out);
             case "DELETE" -> DeleteRequest(requestContext, out);
             case "PUT" -> PutRequest(requestContext, out);
+            default -> {
+                status = "400";
+                stringRequest = "Invalid request!";
+                contentLength = stringRequest.length();
+                PrintReply(out);
+                out.println(stringRequest);
+                out.flush();
+            }
         }
     }
 
