@@ -1,4 +1,4 @@
-//git repo: https://github.com/BlizzardLizzard/REST-HTTP-based-Server/
+package Server;//git repo: https://github.com/BlizzardLizzard/REST-HTTP-based-Server/
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -43,7 +43,7 @@ public class Server {
         String request = requestSplit[0];
         if (!request.isEmpty()) {
             String[] httpVersion = requestSplit[2].split("\\r?\\n");
-            //sends context of the request to the RequestContext class to save important variables of teh request
+            //sends context of the request to the Server.RequestContext class to save important variables of teh request
             RequestContext requestContext =  new RequestContext(request, httpVersion[0], requestSplit[1], requestString);
             new RequestHandler(request, socket, requestContext);
         }
