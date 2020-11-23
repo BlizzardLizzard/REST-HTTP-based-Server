@@ -101,6 +101,7 @@ public class RequestHandler {
                     message = reader.nextLine();
                 }
                 stringRequest += "Entry: " + pathname + " Message: " + message + "\r\n";
+                reader.close();
             }
             contentLength = stringRequest.length();
             PrintReply(out);
@@ -142,6 +143,7 @@ public class RequestHandler {
         //checks if an ID has been give to delete is existing with if(deleteFile.delete()) if so its deleted else the file did not exist
             if(numberOfStrings > 2){
                 File deleteFile = new File("messages/" + pathSplit[2] + ".txt");
+               //file kann noch offen sein!
                 if(deleteFile.delete()){
                     status = "200";
                     stringRequest = pathSplit[2] + ".txt has been successfully deleted!";
